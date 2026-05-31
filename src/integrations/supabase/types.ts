@@ -14,7 +14,312 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      access_requests: {
+        Row: {
+          access_code: string | null
+          approved_at: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          notes: string | null
+          status: string
+          whatsapp: string
+        }
+        Insert: {
+          access_code?: string | null
+          approved_at?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          notes?: string | null
+          status?: string
+          whatsapp: string
+        }
+        Update: {
+          access_code?: string | null
+          approved_at?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
+      admin_users: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          password_hash: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id?: string
+          password_hash: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          password_hash?: string
+        }
+        Relationships: []
+      }
+      agent_settings: {
+        Row: {
+          contact: string
+          id: number
+          name: string
+          notes: string | null
+        }
+        Insert: {
+          contact?: string
+          id?: number
+          name?: string
+          notes?: string | null
+        }
+        Update: {
+          contact?: string
+          id?: number
+          name?: string
+          notes?: string | null
+        }
+        Relationships: []
+      }
+      app_users: {
+        Row: {
+          access_code: string
+          banned: boolean
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          last_login: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          access_code: string
+          banned?: boolean
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          last_login?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          access_code?: string
+          banned?: boolean
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          last_login?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      card_progress: {
+        Row: {
+          card_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          card_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_progress_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "card_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cards: {
+        Row: {
+          answer: string
+          created_at: string
+          difficulty: string
+          id: string
+          order_index: number
+          question: string
+          topic_id: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          order_index?: number
+          question: string
+          topic_id: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          order_index?: number
+          question?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cards_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pricing_settings: {
+        Row: {
+          group_price: number
+          id: number
+          individual_price: number
+        }
+        Insert: {
+          group_price?: number
+          id?: number
+          individual_price?: number
+        }
+        Update: {
+          group_price?: number
+          id?: number
+          individual_price?: number
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          admin_response: string | null
+          created_at: string
+          id: string
+          message: string
+          status: string
+          subject: string
+          user_email: string | null
+          user_id: string | null
+          user_name: string | null
+        }
+        Insert: {
+          admin_response?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          status?: string
+          subject: string
+          user_email?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          admin_response?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          status?: string
+          subject?: string
+          user_email?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      topics: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          order_index: number
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          order_index?: number
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          order_index?: number
+          slug?: string
+        }
+        Relationships: []
+      }
+      user_sessions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
