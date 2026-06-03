@@ -14,7 +14,9 @@ import { Route as SigninRouteImport } from './routes/signin'
 import { Route as RequestAccessRouteImport } from './routes/request-access'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as DashboardTopicSlugRouteImport } from './routes/dashboard.topic.$slug'
 
 const SupportRoute = SupportRouteImport.update({
@@ -42,10 +44,20 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
 } as any)
 const DashboardTopicSlugRoute = DashboardTopicSlugRouteImport.update({
   id: '/topic/$slug',
@@ -55,64 +67,77 @@ const DashboardTopicSlugRoute = DashboardTopicSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/dashboard': typeof DashboardRouteWithChildren
   '/profile': typeof ProfileRoute
   '/request-access': typeof RequestAccessRoute
   '/signin': typeof SigninRoute
   '/support': typeof SupportRoute
+  '/admin/login': typeof AdminLoginRoute
   '/dashboard/topic/$slug': typeof DashboardTopicSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/dashboard': typeof DashboardRouteWithChildren
   '/profile': typeof ProfileRoute
   '/request-access': typeof RequestAccessRoute
   '/signin': typeof SigninRoute
   '/support': typeof SupportRoute
+  '/admin/login': typeof AdminLoginRoute
   '/dashboard/topic/$slug': typeof DashboardTopicSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/dashboard': typeof DashboardRouteWithChildren
   '/profile': typeof ProfileRoute
   '/request-access': typeof RequestAccessRoute
   '/signin': typeof SigninRoute
   '/support': typeof SupportRoute
+  '/admin/login': typeof AdminLoginRoute
   '/dashboard/topic/$slug': typeof DashboardTopicSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/dashboard'
     | '/profile'
     | '/request-access'
     | '/signin'
     | '/support'
+    | '/admin/login'
     | '/dashboard/topic/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/dashboard'
     | '/profile'
     | '/request-access'
     | '/signin'
     | '/support'
+    | '/admin/login'
     | '/dashboard/topic/$slug'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/dashboard'
     | '/profile'
     | '/request-access'
     | '/signin'
     | '/support'
+    | '/admin/login'
     | '/dashboard/topic/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   DashboardRoute: typeof DashboardRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   RequestAccessRoute: typeof RequestAccessRoute
@@ -157,12 +182,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/dashboard/topic/$slug': {
       id: '/dashboard/topic/$slug'
@@ -173,6 +212,16 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminRouteChildren {
+  AdminLoginRoute: typeof AdminLoginRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminLoginRoute: AdminLoginRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface DashboardRouteChildren {
   DashboardTopicSlugRoute: typeof DashboardTopicSlugRoute
@@ -188,6 +237,7 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   DashboardRoute: DashboardRouteWithChildren,
   ProfileRoute: ProfileRoute,
   RequestAccessRoute: RequestAccessRoute,
