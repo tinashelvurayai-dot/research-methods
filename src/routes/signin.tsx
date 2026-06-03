@@ -11,7 +11,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/signin")({
   head: () => ({ meta: [
-    { title: "Sign in — Research Methods" },
+    { title: "Sign in - Research Methods" },
     { name: "description", content: "Sign in with your full name and access code." },
   ]}),
   component: Page,
@@ -62,9 +62,6 @@ function Page() {
           <Button type="submit" className="mt-6 w-full" disabled={m.isPending}>
             {m.isPending ? "Signing in…" : "Sign in"}
           </Button>
-          <p className="mt-4 text-xs text-muted-foreground">
-            Demo: name <span className="font-mono">Demo Student</span> · code <span className="font-mono">DEMO-1234-5678</span>
-          </p>
         </form>
       </main>
     </div>

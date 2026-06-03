@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/request-access")({
   head: () => ({ meta: [
-    { title: "Request access — Research Methods" },
+    { title: "Request access - Research Methods" },
     { name: "description", content: "Request access to the Research Methods revision app." },
   ]}),
   component: Page,

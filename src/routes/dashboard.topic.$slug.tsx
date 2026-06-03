@@ -8,7 +8,7 @@ import { MathText } from "@/components/MathText";
 import { ScreenshotGuard } from "@/components/ScreenshotGuard";
 
 export const Route = createFileRoute("/dashboard/topic/$slug")({
-  head: () => ({ meta: [{ title: "Revise — Research Methods" }] }),
+  head: () => ({ meta: [{ title: "Revise - Research Methods" }] }),
   component: Page,
 });
 
