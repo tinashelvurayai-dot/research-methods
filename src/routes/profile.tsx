@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { getSession, useSession } from "@/lib/session";
 
 export const Route = createFileRoute("/profile")({
-  head: () => ({ meta: [{ title: "Profile — Research Methods" }] }),
+  head: () => ({ meta: [{ title: "Profile - Research Methods" }] }),
   component: Page,
 });
 
@@ -29,9 +29,9 @@ function Page() {
           <dl className="mt-6 space-y-4 text-sm">
             <Row label="Full name" value={u.full_name} />
             <Row label="Email" value={u.email} />
-            <Row label="WhatsApp" value={u.whatsapp ?? "—"} />
+            <Row label="WhatsApp" value={u.whatsapp ?? "-"} />
             <Row label="Access code" value={masked} />
-            <Row label="Access status" value="Full access — permanent" />
+            <Row label="Access status" value="Full access - permanent" />
           </dl>
         </div>
       </main>

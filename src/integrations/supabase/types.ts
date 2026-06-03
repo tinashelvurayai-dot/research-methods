@@ -57,6 +57,7 @@ export type Database = {
           full_name: string | null
           id: string
           password_hash: string
+          session_token: string | null
         }
         Insert: {
           created_at?: string
@@ -64,6 +65,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           password_hash: string
+          session_token?: string | null
         }
         Update: {
           created_at?: string
@@ -71,6 +73,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           password_hash?: string
+          session_token?: string | null
         }
         Relationships: []
       }

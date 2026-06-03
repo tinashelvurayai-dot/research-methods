@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/support")({
-  head: () => ({ meta: [{ title: "Support — Research Methods" }] }),
+  head: () => ({ meta: [{ title: "Support - Research Methods" }] }),
   component: Page,
 });
 

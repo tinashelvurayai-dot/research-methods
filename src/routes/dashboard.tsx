@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ScreenshotGuard } from "@/components/ScreenshotGuard";
 
 export const Route = createFileRoute("/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — Research Methods" }] }),
+  head: () => ({ meta: [{ title: "Dashboard - Research Methods" }] }),
   component: Page,
 });
 
@@ -45,7 +45,7 @@ function Page() {
       <main className="mx-auto max-w-6xl px-6 py-10">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Welcome, {session.user.full_name}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Full access — pick a topic to begin revising.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Full access - pick a topic to begin revising.</p>
         </div>
         {isLoading ? (
           <div className="text-sm text-muted-foreground">Loading topics…</div>
