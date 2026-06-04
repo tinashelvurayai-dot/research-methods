@@ -1,7 +1,7 @@
 export interface ExamCard {
   question: string;
   answer: string;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty?: 'easy' | 'medium' | 'hard';
   topic?: string;
 }
 
