@@ -1,0 +1,72 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(0.18 0.04 260);
+  --foreground: oklch(0.97 0.01 250);
+  --card: oklch(0.22 0.05 260);
+  --card-foreground: oklch(0.97 0.01 250);
+  --popover: oklch(0.22 0.05 260);
+  --popover-foreground: oklch(0.97 0.01 250);
+  --primary: oklch(0.72 0.18 250);
+  --primary-foreground: oklch(0.13 0.04 260);
+  --primary-glow: oklch(0.78 0.16 240);
+  --secondary: oklch(0.78 0.13 80);
+  --secondary-foreground: oklch(0.13 0.04 260);
+  --muted: oklch(0.28 0.04 260);
+  --muted-foreground: oklch(0.75 0.02 250);
+  --accent: oklch(0.78 0.13 80);
+  --accent-foreground: oklch(0.13 0.04 260);
+  --destructive: oklch(0.65 0.22 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.32 0.04 260);
+  --input: oklch(0.28 0.04 260);
+  --ring: oklch(0.72 0.18 250);
+  --radius: 0.625rem;
+  --gold: oklch(0.78 0.13 80);
+  --brand-gradient: linear-gradient(135deg, var(--primary), var(--primary-glow));
+  --shadow-glow: 0 10px 40px -10px color-mix(in oklab, var(--primary) 40%, transparent);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-gold: var(--gold);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+* { border-color: var(--border); }
+html, body, #root { height: 100%; }
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.bg-brand-gradient { background: var(--brand-gradient); }
+.shadow-glow { box-shadow: var(--shadow-glow); }
+.text-gold { color: var(--gold); }
+.border-gold { border-color: var(--gold); }
