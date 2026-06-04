@@ -14,368 +14,324 @@ export type Database = {
   }
   public: {
     Tables: {
-      access_code_usage: {
-        Row: {
-          code_id: string
-          id: string
-          used_at: string
-          user_email: string
-          user_id: string
-        }
-        Insert: {
-          code_id: string
-          id?: string
-          used_at?: string
-          user_email: string
-          user_id: string
-        }
-        Update: {
-          code_id?: string
-          id?: string
-          used_at?: string
-          user_email?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "access_code_usage_code_id_fkey"
-            columns: ["code_id"]
-            isOneToOne: false
-            referencedRelation: "access_codes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      access_codes: {
-        Row: {
-          agent_name: string | null
-          amount: number
-          assigned_emails: string[] | null
-          bound_user_id: string | null
-          code: string
-          created_at: string
-          expires_at: string | null
-          id: string
-          notes: string | null
-          total_seats: number
-          used_seats: number
-        }
-        Insert: {
-          agent_name?: string | null
-          amount?: number
-          assigned_emails?: string[] | null
-          bound_user_id?: string | null
-          code: string
-          created_at?: string
-          expires_at?: string | null
-          id?: string
-          notes?: string | null
-          total_seats?: number
-          used_seats?: number
-        }
-        Update: {
-          agent_name?: string | null
-          amount?: number
-          assigned_emails?: string[] | null
-          bound_user_id?: string | null
-          code?: string
-          created_at?: string
-          expires_at?: string | null
-          id?: string
-          notes?: string | null
-          total_seats?: number
-          used_seats?: number
-        }
-        Relationships: []
-      }
       access_requests: {
         Row: {
+          access_code: string | null
           approved_at: string | null
-          auto_password: string | null
           created_at: string
           email: string
           full_name: string
-          generated_code: string | null
           id: string
           notes: string | null
-          status: Database["public"]["Enums"]["request_status"]
-          synthetic_email: string | null
-          user_id: string | null
+          status: string
           whatsapp: string
         }
         Insert: {
+          access_code?: string | null
           approved_at?: string | null
-          auto_password?: string | null
           created_at?: string
           email: string
           full_name: string
-          generated_code?: string | null
           id?: string
           notes?: string | null
-          status?: Database["public"]["Enums"]["request_status"]
-          synthetic_email?: string | null
-          user_id?: string | null
+          status?: string
           whatsapp: string
         }
         Update: {
+          access_code?: string | null
           approved_at?: string | null
-          auto_password?: string | null
           created_at?: string
           email?: string
           full_name?: string
-          generated_code?: string | null
           id?: string
           notes?: string | null
-          status?: Database["public"]["Enums"]["request_status"]
-          synthetic_email?: string | null
-          user_id?: string | null
+          status?: string
           whatsapp?: string
         }
         Relationships: []
       }
-      agents: {
+      admin_users: {
         Row: {
-          contact: string | null
           created_at: string
+          email: string
+          full_name: string | null
           id: string
-          name: string
+          password_hash: string
+          session_token: string | null
         }
         Insert: {
-          contact?: string | null
           created_at?: string
+          email: string
+          full_name?: string | null
           id?: string
-          name: string
+          password_hash: string
+          session_token?: string | null
         }
         Update: {
-          contact?: string | null
           created_at?: string
+          email?: string
+          full_name?: string | null
           id?: string
-          name?: string
+          password_hash?: string
+          session_token?: string | null
         }
         Relationships: []
       }
-      app_settings: {
+      agent_settings: {
         Row: {
-          id: boolean
-          pair_amount: number
-          primary_agent_name: string
-          solo_amount: number
-          updated_at: string
+          contact: string
+          id: number
+          name: string
+          notes: string | null
         }
         Insert: {
-          id?: boolean
-          pair_amount?: number
-          primary_agent_name?: string
-          solo_amount?: number
-          updated_at?: string
+          contact?: string
+          id?: number
+          name?: string
+          notes?: string | null
         }
         Update: {
-          id?: boolean
-          pair_amount?: number
-          primary_agent_name?: string
-          solo_amount?: number
-          updated_at?: string
+          contact?: string
+          id?: number
+          name?: string
+          notes?: string | null
         }
         Relationships: []
+      }
+      app_users: {
+        Row: {
+          access_code: string
+          banned: boolean
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          last_login: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          access_code: string
+          banned?: boolean
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          last_login?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          access_code?: string
+          banned?: boolean
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          last_login?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      card_progress: {
+        Row: {
+          card_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          card_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_progress_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "card_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cards: {
         Row: {
           answer: string
           created_at: string
+          difficulty: string
           id: string
           order_index: number
           question: string
-          topic_set_id: string
+          topic_id: string
         }
         Insert: {
           answer: string
           created_at?: string
+          difficulty?: string
           id?: string
           order_index?: number
           question: string
-          topic_set_id: string
+          topic_id: string
         }
         Update: {
           answer?: string
           created_at?: string
+          difficulty?: string
           id?: string
           order_index?: number
           question?: string
-          topic_set_id?: string
+          topic_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "cards_topic_set_id_fkey"
-            columns: ["topic_set_id"]
+            foreignKeyName: "cards_topic_id_fkey"
+            columns: ["topic_id"]
             isOneToOne: false
-            referencedRelation: "topic_sets"
+            referencedRelation: "topics"
             referencedColumns: ["id"]
           },
         ]
       }
-      payment_requests: {
+      pricing_settings: {
         Row: {
-          agent_name: string | null
-          amount: number
-          created_at: string
-          generated_code: string | null
-          id: string
-          notes: string | null
-          status: Database["public"]["Enums"]["payment_status"]
-          student_email: string
-          student_email_2: string | null
+          group_price: number
+          id: number
+          individual_price: number
         }
         Insert: {
-          agent_name?: string | null
-          amount: number
-          created_at?: string
-          generated_code?: string | null
-          id?: string
-          notes?: string | null
-          status?: Database["public"]["Enums"]["payment_status"]
-          student_email: string
-          student_email_2?: string | null
+          group_price?: number
+          id?: number
+          individual_price?: number
         }
         Update: {
-          agent_name?: string | null
-          amount?: number
-          created_at?: string
-          generated_code?: string | null
-          id?: string
-          notes?: string | null
-          status?: Database["public"]["Enums"]["payment_status"]
-          student_email?: string
-          student_email_2?: string | null
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          access_level: Database["public"]["Enums"]["access_level"]
-          created_at: string
-          email: string
-          full_name: string | null
-          id: string
-        }
-        Insert: {
-          access_level?: Database["public"]["Enums"]["access_level"]
-          created_at?: string
-          email: string
-          full_name?: string | null
-          id: string
-        }
-        Update: {
-          access_level?: Database["public"]["Enums"]["access_level"]
-          created_at?: string
-          email?: string
-          full_name?: string | null
-          id?: string
+          group_price?: number
+          id?: number
+          individual_price?: number
         }
         Relationships: []
       }
       support_tickets: {
         Row: {
-          admin_reply: string | null
+          admin_response: string | null
           created_at: string
           id: string
           message: string
-          replied_at: string | null
-          status: Database["public"]["Enums"]["ticket_status"]
+          status: string
           subject: string
-          user_email: string
+          user_email: string | null
           user_id: string | null
+          user_name: string | null
         }
         Insert: {
-          admin_reply?: string | null
+          admin_response?: string | null
           created_at?: string
           id?: string
           message: string
-          replied_at?: string | null
-          status?: Database["public"]["Enums"]["ticket_status"]
+          status?: string
           subject: string
-          user_email: string
+          user_email?: string | null
           user_id?: string | null
+          user_name?: string | null
         }
         Update: {
-          admin_reply?: string | null
+          admin_response?: string | null
           created_at?: string
           id?: string
           message?: string
-          replied_at?: string | null
-          status?: Database["public"]["Enums"]["ticket_status"]
+          status?: string
           subject?: string
-          user_email?: string
+          user_email?: string | null
           user_id?: string | null
+          user_name?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      topic_sets: {
+      topics: {
         Row: {
           created_at: string
           description: string | null
-          free_card_limit: number
           id: string
+          name: string
           order_index: number
-          title: string
+          slug: string
         }
         Insert: {
           created_at?: string
           description?: string | null
-          free_card_limit?: number
           id?: string
+          name: string
           order_index?: number
-          title: string
+          slug: string
         }
         Update: {
           created_at?: string
           description?: string | null
-          free_card_limit?: number
           id?: string
+          name?: string
           order_index?: number
-          title?: string
+          slug?: string
         }
         Relationships: []
       }
-      user_roles: {
+      user_sessions: {
         Row: {
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
+          created_at: string
+          expires_at: string
+          token: string
           user_id: string
         }
         Insert: {
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
+          created_at?: string
+          expires_at: string
+          token: string
           user_id: string
         }
         Update: {
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
+          created_at?: string
+          expires_at?: string
+          token?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      admin_exists: { Args: never; Returns: boolean }
-      claim_admin: { Args: never; Returns: Json }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      redeem_access_code: { Args: { _code: string }; Returns: Json }
+      [_ in never]: never
     }
     Enums: {
-      access_level: "free" | "full"
-      app_role: "admin" | "user"
-      payment_status: "pending" | "approved" | "rejected"
-      request_status: "pending" | "approved" | "rejected"
-      ticket_status: "open" | "in_progress" | "closed"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -502,12 +458,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      access_level: ["free", "full"],
-      app_role: ["admin", "user"],
-      payment_status: ["pending", "approved", "rejected"],
-      request_status: ["pending", "approved", "rejected"],
-      ticket_status: ["open", "in_progress", "closed"],
-    },
+    Enums: {},
   },
 } as const
