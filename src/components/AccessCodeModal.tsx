@@ -15,7 +15,7 @@ export function AccessCodeModal({ open, onOpenChange }: { open: boolean; onOpenC
   const submit = async () => {
     if (!code.trim()) return;
     setLoading(true);
-    const { data, error } = await supabase.rpc("redeem_access_code", { _code: code.trim().toUpperCase() });
+    const { data, error } = await (supabase.rpc as any)("redeem_access_code", { _code: code.trim().toUpperCase() });
     setLoading(false);
     if (error) { toast.error(error.message); return; }
     const result = data as { success: boolean; error?: string };
