@@ -34,6 +34,26 @@ export default defineConfig({
             handler: "CacheFirst",
             options: { cacheName: "asset-cache", expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 } },
           },
+          {
+            // Cache Supabase REST GETs (topics, cards, etc.) so the app works fully offline
+            urlPattern: ({ url, request }) =>
+              request.method === "GET" && /\.supabase\.co\/rest\/v1\//.test(url.href),
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "supabase-rest-cache",
+              expiration: { maxEntries: 500, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            urlPattern: ({ url }) => /\.supabase\.co\/storage\/v1\/object\//.test(url.href),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "supabase-storage-cache",
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
         ],
       },
     }),

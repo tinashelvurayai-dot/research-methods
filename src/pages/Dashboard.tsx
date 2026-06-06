@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { BookOpen, ChevronRight } from "lucide-react";
+import { BookOpen, ChevronRight, Search, GraduationCap, Layers } from "lucide-react";
 import { RESEARCH_METHODS_CARDS } from "@/data/research-methods-cards";
 
 interface Topic { id: string; slug: string; name: string; description: string | null; cardCount: number; }
@@ -17,6 +18,7 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(true);
+  const [q, setQ] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -44,17 +46,46 @@ export default function Dashboard() {
     })();
   }, []);
 
+  const filtered = useMemo(() => {
+    const s = q.trim().toLowerCase();
+    if (!s) return topics;
+    return topics.filter((t) =>
+      t.name.toLowerCase().includes(s) || (t.description || "").toLowerCase().includes(s));
+  }, [q, topics]);
+
+  const totalCards = useMemo(() => topics.reduce((a, t) => a + t.cardCount, 0), [topics]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <AppHeader />
       <main className="flex-1 container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-1">Welcome, {user?.full_name?.split(" ")[0]}</h1>
-        <p className="text-muted-foreground mb-6">Pick a topic and start revising.</p>
+        <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+          <div>
+            <h1 className="text-3xl font-bold mb-1">Welcome, {user?.full_name?.split(" ")[0]}</h1>
+            <p className="text-muted-foreground">Pick a topic and start revising.</p>
+          </div>
+          <div className="flex gap-2">
+            <Card className="px-4 py-3 bg-card/60 flex items-center gap-2">
+              <Layers className="h-4 w-4 text-secondary" />
+              <span className="text-sm"><strong>{topics.length}</strong> topics</span>
+            </Card>
+            <Card className="px-4 py-3 bg-card/60 flex items-center gap-2">
+              <GraduationCap className="h-4 w-4 text-secondary" />
+              <span className="text-sm"><strong>{totalCards}</strong> cards</span>
+            </Card>
+          </div>
+        </div>
+        <div className="relative max-w-md mb-6">
+          <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input className="pl-9" placeholder="Search topics" value={q} onChange={(e) => setQ(e.target.value)} />
+        </div>
         {loading ? (
           <p className="text-muted-foreground">Loading topics...</p>
+        ) : filtered.length === 0 ? (
+          <Card className="p-6 text-center text-sm text-muted-foreground">No topics match "{q}".</Card>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {topics.map((t) => (
+            {filtered.map((t) => (
               <Link key={t.id} to={`/dashboard/topic/${t.slug}`}>
                 <Card className="p-5 hover:border-secondary/60 transition group cursor-pointer bg-card/60">
                   <div className="flex items-start justify-between">

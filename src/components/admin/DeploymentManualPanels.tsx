@@ -72,7 +72,7 @@ export function DeploymentPanel() {
           <li>Paste the two <code>VITE_*</code> env vars above into Vercel.</li>
           <li>Click Deploy. Add your custom domain under Settings → Domains.</li>
           <li>In Supabase Dashboard → Authentication → URL Configuration, add your Vercel domain to <strong>Site URL</strong> and <strong>Redirect URLs</strong>.</li>
-          <li>Deploy edge functions (one-time): <code>supabase functions deploy access-submit access-signin access-approve access-resend access-reject</code>.</li>
+          <li>Deploy edge functions (one-time): <code>supabase functions deploy access-submit access-approve access-reject admin-login</code>.</li>
         </ol>
       </div>
 
