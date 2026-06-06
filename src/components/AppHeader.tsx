@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
@@ -8,6 +9,19 @@ import { InstallAppButton } from "@/components/InstallAppButton";
 export function AppHeader({ showBack = false, backTo = "/" }: { showBack?: boolean; backTo?: string }) {
   const { user, isAdmin, signOut } = useAuth();
   const nav = useNavigate();
+  const tapsRef = useRef<{ count: number; timer: ReturnType<typeof setTimeout> | null }>({ count: 0, timer: null });
+
+  const handleLogoTap = () => {
+    const s = tapsRef.current;
+    s.count += 1;
+    if (s.timer) clearTimeout(s.timer);
+    s.timer = setTimeout(() => { s.count = 0; }, 1500);
+    if (s.count >= 7) {
+      s.count = 0;
+      if (s.timer) clearTimeout(s.timer);
+      nav(isAdmin ? "/admin" : "/admin/login");
+    }
+  };
 
   return (
     <header className="border-b border-border/50 bg-background/80 backdrop-blur sticky top-0 z-40">
@@ -18,7 +32,7 @@ export function AppHeader({ showBack = false, backTo = "/" }: { showBack?: boole
               <ArrowLeft className="h-4 w-4 mr-1" /> Back
             </Button>
           )}
-          <Link to="/" className="flex items-center gap-3 select-none">
+          <Link to="/" className="flex items-center gap-3 select-none" onClick={handleLogoTap}>
             <img src={logo} alt="Research Methods" className="h-10 w-auto" draggable={false} />
           </Link>
         </div>

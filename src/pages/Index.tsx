@@ -16,9 +16,9 @@ export default function Index() {
             Built from real National Diploma past papers
           </div>
           <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-4">
-            Stop re-reading notes.<br />
+            Master Research Methods.<br />
             <span className="bg-gradient-to-r from-primary via-primary-glow to-secondary bg-clip-text text-transparent">
-              Start passing Research Methods.
+              Ace your exam with confidence.
             </span>
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-2">
@@ -92,7 +92,7 @@ export default function Index() {
 
       <footer className="border-t border-border/50 py-6 text-center text-xs text-muted-foreground">
         <p className="text-gold tracking-wider">
-          Forgiato a mano da Ultimate_Developers · Bottega Digitale · MMXXVI
+          Forgiato a mano da Ultimate_Developers · Bottega Digitale
         </p>
         <p className="mt-1">Support: researchmethods@gmail.com</p>
       </footer>

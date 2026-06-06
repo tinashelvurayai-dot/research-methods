@@ -23,6 +23,7 @@ interface AuthCtx {
 const Ctx = createContext<AuthCtx | undefined>(undefined);
 const USER_KEY = "rm.user.v1";
 const ADMIN_KEY = "rm.admin.v1";
+const ADMIN_TOKEN_KEY = "rm.admin.token.v1";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
@@ -72,12 +73,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw new Error(error.message);
     if (!data?.ok) throw new Error(data?.error || "Login failed");
     localStorage.setItem(ADMIN_KEY, email.trim().toLowerCase());
+    if (data.token) localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
     setAdminEmail(email.trim().toLowerCase());
   }, []);
 
   const signOut = useCallback(() => {
     localStorage.removeItem(USER_KEY);
     localStorage.removeItem(ADMIN_KEY);
+    localStorage.removeItem(ADMIN_TOKEN_KEY);
     setUser(null);
     setAdminEmail(null);
   }, []);
