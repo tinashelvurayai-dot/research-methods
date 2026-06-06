@@ -17,7 +17,7 @@ createRoot(document.getElementById("root")!).render(
   </StrictMode>,
 );
 
-// Register PWA service worker in production only (not in Lovable preview / dev).
+// Register PWA service worker in production only (not preview / dev).
 if (
   import.meta.env.PROD &&
   typeof window !== "undefined" &&
