@@ -11,7 +11,8 @@ export function AppHeader({ showBack = false, backTo = "/" }: { showBack?: boole
   const nav = useNavigate();
   const tapsRef = useRef<{ count: number; timer: ReturnType<typeof setTimeout> | null }>({ count: 0, timer: null });
 
-  const handleLogoTap = () => {
+  const handleLogoTap = (e: React.MouseEvent) => {
+    e.preventDefault();
     const s = tapsRef.current;
     s.count += 1;
     if (s.timer) clearTimeout(s.timer);
@@ -19,7 +20,11 @@ export function AppHeader({ showBack = false, backTo = "/" }: { showBack?: boole
     if (s.count >= 7) {
       s.count = 0;
       if (s.timer) clearTimeout(s.timer);
-      nav(isAdmin ? "/admin" : "/admin/login");
+      nav(isAdmin ? "/admin" : "/admin/setup");
+    } else if (s.count === 1) {
+      window.setTimeout(() => {
+        if (tapsRef.current.count > 0 && tapsRef.current.count < 7) nav("/");
+      }, 1700);
     }
   };
 
