@@ -15,6 +15,7 @@ interface AuthCtx {
   adminEmail: string | null;
   loading: boolean;
   signInWithCode: (full_name: string, access_code: string) => Promise<void>;
+  signUpAdmin: (full_name: string, email: string, password: string) => Promise<void>;
   signInAdmin: (email: string, password: string) => Promise<void>;
   signOut: () => void;
   refresh: () => Promise<void>;
@@ -41,29 +42,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithCode = useCallback(async (full_name: string, access_code: string) => {
-    const code = access_code.trim().toUpperCase();
-    const name = full_name.trim();
-    const { data, error } = await supabase
-      .from("app_users")
-      .select("*")
-      .eq("access_code", code)
-      .maybeSingle();
+    const { data, error } = await supabase.functions.invoke("user-signin", {
+      body: { full_name, access_code },
+    });
     if (error) throw new Error(error.message);
-    if (!data) throw new Error("Invalid access code");
-    if (data.banned) throw new Error("Account is suspended");
-    if (data.full_name.trim().toLowerCase() !== name.toLowerCase()) {
-      throw new Error("Name does not match this code");
-    }
+    if (!data?.ok) throw new Error(data?.error || "Sign in failed");
+    const row = data.user;
     const u: AppUser = {
-      id: data.id,
-      full_name: data.full_name,
-      email: data.email,
-      access_code: data.access_code,
-      banned: data.banned,
+      id: row.id,
+      full_name: row.full_name,
+      email: row.email,
+      access_code: row.access_code,
+      banned: row.banned,
     };
     localStorage.setItem(USER_KEY, JSON.stringify(u));
     setUser(u);
-    supabase.from("app_users").update({ last_login: new Date().toISOString() }).eq("id", u.id).then(() => {});
+  }, []);
+
+  const signUpAdmin = useCallback(async (full_name: string, email: string, password: string) => {
+    const cleanEmail = email.trim().toLowerCase();
+    const { data, error } = await supabase.functions.invoke("admin-signup", {
+      body: { full_name, email: cleanEmail, password },
+    });
+    if (error) throw new Error(error.message);
+    if (!data?.ok) throw new Error(data?.error || "Admin setup failed");
+    localStorage.setItem(ADMIN_KEY, cleanEmail);
+    if (data.token) localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+    setAdminEmail(cleanEmail);
   }, []);
 
   const signInAdmin = useCallback(async (email: string, password: string) => {
@@ -87,11 +92,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     if (!user) return;
-    const { data } = await supabase.from("app_users").select("*").eq("id", user.id).maybeSingle();
-    if (data) {
+    const { data } = await supabase.functions.invoke("user-signin", { body: { user_id: user.id } });
+    if (data?.ok && data.user) {
+      const row = data.user;
       const u: AppUser = {
-        id: data.id, full_name: data.full_name, email: data.email,
-        access_code: data.access_code, banned: data.banned,
+        id: row.id, full_name: row.full_name, email: row.email,
+        access_code: row.access_code, banned: row.banned,
       };
       localStorage.setItem(USER_KEY, JSON.stringify(u));
       setUser(u);
@@ -101,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={{
       user, isAdmin: !!adminEmail, adminEmail, loading,
-      signInWithCode, signInAdmin, signOut, refresh,
+      signInWithCode, signUpAdmin, signInAdmin, signOut, refresh,
     }}>
       {children}
     </Ctx.Provider>
