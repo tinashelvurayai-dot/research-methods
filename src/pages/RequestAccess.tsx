@@ -5,13 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 
 export default function RequestAccess() {
-  const [form, setForm] = useState({ full_name: "", email: "", whatsapp: "", notes: "" });
+  const [form, setForm] = useState({ full_name: "", email: "", whatsapp: "" });
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -22,7 +21,7 @@ export default function RequestAccess() {
       full_name: form.full_name.trim(),
       email: form.email.trim().toLowerCase(),
       whatsapp: form.whatsapp.trim(),
-      notes: form.notes.trim() || null,
+      notes: null,
     } as any);
     setLoading(false);
     if (error) { toast.error(error.message); return; }
@@ -32,7 +31,7 @@ export default function RequestAccess() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader />
+      <AppHeader showBack backTo="/" />
       <main className="flex-1 container mx-auto px-4 py-12 max-w-md">
         <Card className="p-6 bg-card/70">
           {done ? (
@@ -52,7 +51,6 @@ export default function RequestAccess() {
                 <div><Label>Full name</Label><Input required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} /></div>
                 <div><Label>Email</Label><Input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
                 <div><Label>WhatsApp number</Label><Input required value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} /></div>
-                <div><Label>Notes (optional)</Label><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
                 <Button type="submit" disabled={loading} className="w-full bg-brand-gradient text-primary-foreground">
                   {loading ? "Submitting..." : "Submit request"}
                 </Button>
