@@ -62,18 +62,15 @@ export default function AdminPanel() {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: r }, { data: u }, { data: t }, { count: tc }, { count: cc }] = await Promise.all([
-      supabase.from("access_requests").select("*").order("created_at", { ascending: false }),
-      supabase.from("app_users").select("*").order("created_at", { ascending: false }),
-      supabase.from("support_tickets").select("*").order("created_at", { ascending: false }),
-      supabase.from("topics").select("*", { count: "exact", head: true }),
-      supabase.from("cards").select("*", { count: "exact", head: true }),
-    ]);
-    setRequests((r as Req[]) || []);
-    setUsers((u as User[]) || []);
-    setTickets((t as Ticket[]) || []);
-    setTopicCount(tc || 0);
-    setCardCount(cc || 0);
+    const { data, error } = await supabase.functions.invoke("admin-data", {
+      headers: { "x-admin-token": adminToken() },
+    });
+    if (error || (data as any)?.error) toast.error(error?.message || (data as any)?.error || "Could not load admin data");
+    setRequests(((data as any)?.requests as Req[]) || []);
+    setUsers(((data as any)?.users as User[]) || []);
+    setTickets(((data as any)?.tickets as Ticket[]) || []);
+    setTopicCount((data as any)?.topicCount || 0);
+    setCardCount((data as any)?.cardCount || 0);
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
@@ -89,13 +86,13 @@ export default function AdminPanel() {
   };
 
   const reject = async (id: string) => {
-    await supabase.from("access_requests").update({ status: "rejected" }).eq("id", id);
+    await supabase.functions.invoke("admin-action", { body: { action: "reject", id }, headers: { "x-admin-token": adminToken() } });
     toast.success("Rejected");
     load();
   };
 
   const toggleBan = async (u: User) => {
-    await supabase.from("app_users").update({ banned: !u.banned }).eq("id", u.id);
+    await supabase.functions.invoke("admin-action", { body: { action: "ban", id: u.id, banned: !u.banned }, headers: { "x-admin-token": adminToken() } });
     toast.success(u.banned ? "Unbanned" : "Banned");
     load();
   };
@@ -107,9 +104,7 @@ export default function AdminPanel() {
 
   const replyTicket = async (t: Ticket, response: string) => {
     if (!response.trim()) return;
-    await supabase.from("support_tickets").update({
-      admin_response: response, status: "resolved",
-    }).eq("id", t.id);
+    await supabase.functions.invoke("admin-action", { body: { action: "reply", id: t.id, response }, headers: { "x-admin-token": adminToken() } });
     toast.success("Reply saved");
     load();
   };

@@ -19,7 +19,11 @@ export default function Support() {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.from("support_tickets").insert({
-      user_id: user?.id, subject, message,
+      user_id: user?.id,
+      user_email: user?.email,
+      user_name: user?.full_name,
+      subject,
+      message,
     } as any);
     setLoading(false);
     if (error) { toast.error(error.message); return; }
