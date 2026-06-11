@@ -331,7 +331,7 @@ function TicketRow({ t, onReply }: { t: Ticket; onReply: (t: Ticket, r: string) 
       </div>
       <p className="text-sm whitespace-pre-wrap">{t.message}</p>
       <div className="flex gap-2 items-start">
-        <Input placeholder="Type a quick reply…" value={reply} onChange={(e) => setReply(e.target.value)} />
+        <Textarea rows={2} placeholder="Type a quick reply…" value={reply} onChange={(e) => setReply(e.target.value)} className="min-h-[60px] flex-1" />
         {t.user_email && (
           <Button asChild variant="outline" size="sm">
             <a href={mailto} target="_blank" rel="noopener noreferrer"><Mail className="h-4 w-4 mr-1" /> Gmail</a>
