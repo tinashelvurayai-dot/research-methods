@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { RichContent } from "@/components/RichContent";
 import { ChevronLeft, ChevronRight, RotateCw } from "lucide-react";
 import { RESEARCH_METHODS_CARDS } from "@/data/research-methods-cards";
+import { useScreenshotProtection } from "@/hooks/use-screenshot-protection";
 
 interface CardRec { id: string; question: string; answer: string; }
 
@@ -16,6 +17,7 @@ function slugify(s: string) {
 
 export default function TopicView() {
   const { slug } = useParams<{ slug: string }>();
+  const { hidden } = useScreenshotProtection();
   const [cards, setCards] = useState<CardRec[]>([]);
   const [topicName, setTopicName] = useState("");
   const [idx, setIdx] = useState(0);
@@ -48,6 +50,11 @@ export default function TopicView() {
   return (
     <div className="min-h-screen flex flex-col">
       <AppHeader showBack backTo="/dashboard" />
+      {hidden && (
+        <div className="fixed inset-0 z-[100] bg-background flex items-center justify-center">
+          <p className="text-muted-foreground text-sm">Content hidden while window is inactive</p>
+        </div>
+      )}
       <main className="flex-1 container mx-auto px-4 py-6 max-w-3xl">
         <h1 className="text-2xl font-bold mb-1">{topicName}</h1>
         <p className="text-xs text-muted-foreground mb-4">{cards.length} cards · Card {Math.min(idx + 1, cards.length)} of {cards.length}</p>
