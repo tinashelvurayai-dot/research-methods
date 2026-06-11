@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { BookOpen, ChevronRight, Search, GraduationCap, Layers } from "lucide-react";
+import { BookOpen, ChevronRight, Search, GraduationCap, Layers, Trophy, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { RESEARCH_METHODS_CARDS } from "@/data/research-methods-cards";
 
 interface Topic { id: string; slug: string; name: string; description: string | null; cardCount: number; }
@@ -79,6 +80,30 @@ export default function Dashboard() {
           <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input className="pl-9" placeholder="Search topics" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
+
+        {/* Exam Mode hero */}
+        <Link to="/exam" className="block mb-6">
+          <Card className="p-5 bg-gradient-to-br from-primary/20 via-card/60 to-secondary/20 border-secondary/40 hover:border-secondary transition group">
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-secondary/20">
+                  <Trophy className="h-6 w-6 text-secondary" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-lg">Exam Mode</h3>
+                    <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-secondary/20 text-secondary flex items-center gap-1">
+                      <Sparkles className="h-3 w-3" /> New
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">30 questions · 90 minutes · stratified across every topic.</p>
+                </div>
+              </div>
+              <Button className="bg-brand-gradient text-primary-foreground">Start exam <ChevronRight className="h-4 w-4 ml-1" /></Button>
+            </div>
+          </Card>
+        </Link>
+
         {loading ? (
           <p className="text-muted-foreground">Loading topics...</p>
         ) : filtered.length === 0 ? (
