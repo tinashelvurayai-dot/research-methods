@@ -16,16 +16,16 @@ export function AppHeader({ showBack = false, backTo = "/" }: { showBack?: boole
     const s = tapsRef.current;
     s.count += 1;
     if (s.timer) clearTimeout(s.timer);
-    s.timer = setTimeout(() => { s.count = 0; }, 1500);
     if (s.count >= 7) {
       s.count = 0;
-      if (s.timer) clearTimeout(s.timer);
       nav(isAdmin ? "/admin" : "/admin/setup");
-    } else if (s.count === 1) {
-      window.setTimeout(() => {
-        if (tapsRef.current.count > 0 && tapsRef.current.count < 7) nav("/");
-      }, 1700);
+      return;
     }
+    s.timer = setTimeout(() => {
+      // Treat as a normal logo click → go home (only if not already there)
+      if (window.location.pathname !== "/") nav("/");
+      s.count = 0;
+    }, 400);
   };
 
   return (

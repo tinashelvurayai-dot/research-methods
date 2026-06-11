@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,11 +9,13 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 
 export default function AdminLogin() {
-  const { signInAdmin } = useAuth();
+  const { signInAdmin, isAdmin, loading: authLoading } = useAuth();
   const nav = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  if (!authLoading && isAdmin) return <Navigate to="/admin" replace />;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();

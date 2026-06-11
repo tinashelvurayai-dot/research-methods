@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { InstallPromptModal } from "@/components/InstallPromptModal";
+import { useOfflineDetector } from "@/hooks/use-offline";
 import Index from "@/pages/Index";
 import SignIn from "@/pages/SignIn";
 import RequestAccess from "@/pages/RequestAccess";
@@ -28,6 +29,7 @@ function AdminProtected({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  useOfflineDetector();
   return (
     <>
       <InstallPromptModal />

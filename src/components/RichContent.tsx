@@ -80,7 +80,7 @@ export function RichContent({ text }: { text: string }) {
           a: ({ node, ...p }) => <a className="text-primary underline" target="_blank" rel="noreferrer" {...p} />,
         }}
       >
-        {text}
+        {cleaned}
       </ReactMarkdown>
     </div>
   );
