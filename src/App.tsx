@@ -9,6 +9,7 @@ import Dashboard from "@/pages/Dashboard";
 import TopicView from "@/pages/TopicView";
 import Profile from "@/pages/Profile";
 import Support from "@/pages/Support";
+import ExamMode from "@/pages/ExamMode";
 import AdminSetup from "@/pages/AdminSetup";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminPanel from "@/pages/AdminPanel";
@@ -41,6 +42,7 @@ export default function App() {
         <Route path="/dashboard/topic/:slug" element={<Protected><TopicView /></Protected>} />
         <Route path="/profile" element={<Protected><Profile /></Protected>} />
         <Route path="/support" element={<Protected><Support /></Protected>} />
+        <Route path="/exam" element={<Protected><ExamMode /></Protected>} />
         <Route path="/admin/setup" element={<AdminSetup />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminProtected><AdminPanel /></AdminProtected>} />
