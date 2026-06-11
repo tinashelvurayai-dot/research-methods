@@ -8,7 +8,7 @@ import { InstallAppButton } from "@/components/InstallAppButton";
 import { useEffect, useState } from "react";
 
 export function AppHeader({ showBack = false, backTo = "/" }: { showBack?: boolean; backTo?: string }) {
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const nav = useNavigate();
   const tapsRef = useRef<{ count: number; timer: ReturnType<typeof setTimeout> | null }>({ count: 0, timer: null });
   const [online, setOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
@@ -27,7 +27,6 @@ export function AppHeader({ showBack = false, backTo = "/" }: { showBack?: boole
     if (s.timer) clearTimeout(s.timer);
     if (s.count >= 7) {
       s.count = 0;
-      const { isAdmin } = useAuth.getState ? useAuth.getState() : { isAdmin: false };
       nav(isAdmin ? "/admin" : "/admin/setup");
       return;
     }
