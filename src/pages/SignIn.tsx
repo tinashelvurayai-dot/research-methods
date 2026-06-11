@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 
 export default function SignIn() {
@@ -13,13 +14,27 @@ export default function SignIn() {
   const nav = useNavigate();
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
+  const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("rm.remember.v1");
+      if (raw) {
+        const { name: n, code: c } = JSON.parse(raw);
+        if (n) setName(n);
+        if (c) setCode(c);
+      }
+    } catch {}
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       await signInWithCode(name, code);
+      if (remember) localStorage.setItem("rm.remember.v1", JSON.stringify({ name, code }));
+      else localStorage.removeItem("rm.remember.v1");
       toast.success("Welcome back!");
       nav("/dashboard");
     } catch (err: any) {
@@ -31,7 +46,7 @@ export default function SignIn() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader />
+      <AppHeader showBack backTo="/" />
       <main className="flex-1 container mx-auto px-4 py-12 max-w-md">
         <Card className="p-6 bg-card/70">
           <h1 className="text-2xl font-bold mb-1">Sign in</h1>
@@ -48,6 +63,10 @@ export default function SignIn() {
             <Button type="submit" disabled={loading} className="w-full bg-brand-gradient text-primary-foreground">
               {loading ? "Signing in..." : "Sign in"}
             </Button>
+            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none">
+              <Checkbox checked={remember} onCheckedChange={(v) => setRemember(!!v)} />
+              Remember me on this device
+            </label>
           </form>
           <p className="text-xs text-muted-foreground text-center mt-4">
             No code? <Link to="/request-access" className="text-secondary underline">Request one</Link>
