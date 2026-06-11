@@ -3,13 +3,22 @@ import { useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
-import { LogOut, Shield, User as UserIcon, LifeBuoy, ArrowLeft } from "lucide-react";
+import { LogOut, User as UserIcon, LifeBuoy, ArrowLeft, WifiOff } from "lucide-react";
 import { InstallAppButton } from "@/components/InstallAppButton";
+import { useEffect, useState } from "react";
 
 export function AppHeader({ showBack = false, backTo = "/" }: { showBack?: boolean; backTo?: string }) {
   const { user, isAdmin, signOut } = useAuth();
   const nav = useNavigate();
   const tapsRef = useRef<{ count: number; timer: ReturnType<typeof setTimeout> | null }>({ count: 0, timer: null });
+  const [online, setOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
+  useEffect(() => {
+    const on = () => setOnline(true);
+    const off = () => setOnline(false);
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
+    return () => { window.removeEventListener("online", on); window.removeEventListener("offline", off); };
+  }, []);
 
   const handleLogoTap = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -40,6 +49,11 @@ export function AppHeader({ showBack = false, backTo = "/" }: { showBack?: boole
           <Link to="/" className="flex items-center gap-3 select-none" onClick={handleLogoTap}>
             <img src={logo} alt="Research Methods" className="h-10 w-auto" draggable={false} />
           </Link>
+          {!online && (
+            <span className="hidden sm:inline-flex items-center gap-1 text-xs text-amber-300 ml-2">
+              <WifiOff className="h-3 w-3" /> Offline
+            </span>
+          )}
         </div>
         <nav className="flex items-center gap-1 flex-wrap justify-end">
           <InstallAppButton className="hidden sm:inline-flex text-white hover:text-white border-white/30" />
@@ -54,11 +68,6 @@ export function AppHeader({ showBack = false, backTo = "/" }: { showBack?: boole
               <Button variant="ghost" size="sm" asChild className="text-white hover:text-white hover:bg-white/10">
                 <Link to="/support"><LifeBuoy className="h-4 w-4 mr-1" /> Support</Link>
               </Button>
-              {isAdmin && (
-                <Button variant="secondary" size="sm" asChild>
-                  <Link to="/admin"><Shield className="h-4 w-4 mr-1" /> Admin</Link>
-                </Button>
-              )}
               <Button variant="ghost" size="sm" onClick={() => { signOut(); nav("/"); }} className="text-white hover:text-white hover:bg-white/10">
                 <LogOut className="h-4 w-4" />
               </Button>
