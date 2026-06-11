@@ -7,10 +7,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
   Users, Inbox, CheckCircle2, Clock, Mail, Search, Ban, RotateCcw,
-  ShieldCheck, BookOpen, MessageSquare, Copy,
+  ShieldCheck, BookOpen, MessageSquare, Copy, LogOut, TrendingUp,
 } from "lucide-react";
 
 interface Req {
@@ -53,6 +55,8 @@ Keep this code private — it's tied to your name.
 }
 
 export default function AdminPanel() {
+  const { signOut, adminEmail } = useAuth();
+  const nav = useNavigate();
   const [requests, setRequests] = useState<Req[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -135,7 +139,13 @@ export default function AdminPanel() {
           <Button variant="outline" size="sm" onClick={load}>
             <RotateCcw className="h-4 w-4 mr-1" /> Refresh
           </Button>
+          <Button variant="outline" size="sm" onClick={() => { signOut(); nav("/"); }}>
+            <LogOut className="h-4 w-4 mr-1" /> Sign out
+          </Button>
         </div>
+        {adminEmail && (
+          <p className="text-xs text-muted-foreground -mt-2">Signed in as <span className="text-secondary">{adminEmail}</span></p>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -144,6 +154,19 @@ export default function AdminPanel() {
           <StatCard icon={BookOpen} label="Cards" value={cardCount} subtitle={`${topicCount} topics`} />
           <StatCard icon={MessageSquare} label="Open tickets" value={tickets.filter((t) => t.status === "open").length} />
         </div>
+
+        {/* Activity summary */}
+        <Card className="p-4 bg-card/60">
+          <div className="flex items-center gap-2 mb-3 text-sm">
+            <TrendingUp className="h-4 w-4 text-secondary" />
+            <strong>Last 7 days</strong>
+          </div>
+          <div className="grid grid-cols-3 gap-3 text-center">
+            <div><div className="text-2xl font-bold">{requests.filter(r => Date.now() - new Date(r.created_at).getTime() < 7*864e5).length}</div><div className="text-xs text-muted-foreground">New requests</div></div>
+            <div><div className="text-2xl font-bold">{users.filter(u => Date.now() - new Date(u.created_at).getTime() < 7*864e5).length}</div><div className="text-xs text-muted-foreground">New users</div></div>
+            <div><div className="text-2xl font-bold">{tickets.filter(t => Date.now() - new Date(t.created_at).getTime() < 7*864e5).length}</div><div className="text-xs text-muted-foreground">New tickets</div></div>
+          </div>
+        </Card>
 
         <Tabs defaultValue="requests">
           <TabsList>
