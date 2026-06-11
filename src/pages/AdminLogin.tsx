@@ -27,7 +27,7 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeader />
+      <AppHeader showBack backTo="/" />
       <main className="flex-1 container mx-auto px-4 py-12 max-w-md">
         <Card className="p-6 bg-card/70">
           <h1 className="text-2xl font-bold mb-4">Admin sign in</h1>
