@@ -21,10 +21,6 @@ export function AppHeader({ showBack = false, backTo = "/" }: { showBack?: boole
       s.count = 0;
       if (s.timer) clearTimeout(s.timer);
       nav(isAdmin ? "/admin" : "/admin/setup");
-    } else if (s.count === 1) {
-      window.setTimeout(() => {
-        if (tapsRef.current.count > 0 && tapsRef.current.count < 7) nav("/");
-      }, 1700);
     }
   };
 
