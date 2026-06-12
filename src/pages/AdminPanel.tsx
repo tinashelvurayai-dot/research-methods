@@ -13,11 +13,13 @@ import { toast } from "sonner";
 import {
   Users, Inbox, CheckCircle2, Clock, Mail, Search, Ban, RotateCcw,
   ShieldCheck, BookOpen, MessageSquare, Copy, LogOut, TrendingUp,
+  Calendar, Filter, Flame, AlertTriangle, X,
 } from "lucide-react";
 
 interface Req {
   id: string; full_name: string; email: string; whatsapp: string;
   status: string; access_code: string | null; created_at: string; notes: string | null;
+  approved_at?: string | null;
 }
 interface User {
   id: string; full_name: string; email: string; access_code: string;
@@ -54,6 +56,14 @@ Keep this code private — it's tied to your name.
   return `https://mail.google.com/mail/?${params.toString()}`;
 }
 
+function timeAgo(iso: string) {
+  const d = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (d < 60) return "just now";
+  if (d < 3600) return `${Math.floor(d / 60)}m ago`;
+  if (d < 86400) return `${Math.floor(d / 3600)}h ago`;
+  return `${Math.floor(d / 86400)}d ago`;
+}
+
 export default function AdminPanel() {
   const { signOut, adminEmail } = useAuth();
   const nav = useNavigate();
@@ -64,6 +74,8 @@ export default function AdminPanel() {
   const [cardCount, setCardCount] = useState(0);
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
+  const [reqFilter, setReqFilter] = useState<"all" | "pending" | "approved" | "rejected" | "today" | "stale">("all");
+  const [reqSearch, setReqSearch] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -115,6 +127,33 @@ export default function AdminPanel() {
   };
 
   const pending = useMemo(() => requests.filter((r) => r.status === "pending"), [requests]);
+
+  function classify(r: Req) {
+    const ageH = (Date.now() - new Date(r.created_at).getTime()) / 3.6e6;
+    if (r.status === "pending" && ageH > 48) return { label: "Stale", tone: "destructive" as const, icon: AlertTriangle };
+    if (r.status === "pending" && ageH < 6) return { label: "Hot", tone: "default" as const, icon: Flame };
+    if (r.status === "approved" && ageH < 24) return { label: "Fresh approval", tone: "secondary" as const, icon: CheckCircle2 };
+    return null;
+  }
+
+  const filteredRequests = useMemo(() => {
+    const s = reqSearch.trim().toLowerCase();
+    return requests.filter((r) => {
+      if (reqFilter === "pending" && r.status !== "pending") return false;
+      if (reqFilter === "approved" && r.status !== "approved") return false;
+      if (reqFilter === "rejected" && r.status !== "rejected") return false;
+      if (reqFilter === "today" && Date.now() - new Date(r.created_at).getTime() > 864e5) return false;
+      if (reqFilter === "stale" && !(r.status === "pending" && Date.now() - new Date(r.created_at).getTime() > 48 * 3.6e6)) return false;
+      if (!s) return true;
+      return (
+        r.full_name.toLowerCase().includes(s) ||
+        r.email.toLowerCase().includes(s) ||
+        (r.whatsapp || "").toLowerCase().includes(s) ||
+        (r.access_code || "").toLowerCase().includes(s)
+      );
+    });
+  }, [requests, reqFilter, reqSearch]);
+
   const filteredUsers = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return users;
@@ -180,21 +219,65 @@ export default function AdminPanel() {
 
           {/* Requests */}
           <TabsContent value="requests" className="mt-4 space-y-2">
+            <div className="flex flex-wrap gap-2 items-center">
+              <div className="relative flex-1 min-w-[220px] max-w-md">
+                <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input className="pl-9 pr-8" placeholder="Search name, email, WhatsApp or code" value={reqSearch} onChange={(e) => setReqSearch(e.target.value)} />
+                {reqSearch && (
+                  <button onClick={() => setReqSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-1 items-center text-xs">
+                <Filter className="h-3.5 w-3.5 text-muted-foreground mr-1" />
+                {(["all", "pending", "approved", "rejected", "today", "stale"] as const).map((k) => (
+                  <button
+                    key={k}
+                    onClick={() => setReqFilter(k)}
+                    className={`px-2.5 py-1 rounded-full border capitalize transition ${
+                      reqFilter === k ? "bg-secondary text-secondary-foreground border-secondary" : "border-border text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {k}
+                  </button>
+                ))}
+              </div>
+            </div>
             {loading ? (
               <p className="text-sm text-muted-foreground">Loading…</p>
-            ) : requests.length === 0 ? (
+            ) : filteredRequests.length === 0 ? (
               <Card className="p-6 text-center text-sm text-muted-foreground">No access requests yet.</Card>
             ) : (
-              requests.map((r) => (
+              filteredRequests.map((r) => {
+                const tag = classify(r);
+                const TagIcon = tag?.icon;
+                return (
                 <Card key={r.id} className="p-4 bg-card/60">
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{r.full_name}</span>
                         <StatusBadge status={r.status} />
+                        {tag && TagIcon && (
+                          <Badge variant={tag.tone} className="gap-1 text-[10px]">
+                            <TagIcon className="h-3 w-3" /> {tag.label}
+                          </Badge>
+                        )}
                       </div>
                       <div className="text-xs text-muted-foreground">
                         {r.email} · {r.whatsapp}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground flex flex-wrap gap-x-3 gap-y-0.5">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" /> Requested {new Date(r.created_at).toLocaleString()}
+                        </span>
+                        <span className="text-secondary/80">· {timeAgo(r.created_at)}</span>
+                        {r.approved_at && (
+                          <span className="flex items-center gap-1 text-emerald-500">
+                            <CheckCircle2 className="h-3 w-3" /> Approved {new Date(r.approved_at).toLocaleString()}
+                          </span>
+                        )}
                       </div>
                       {r.notes && <div className="text-xs italic text-muted-foreground">"{r.notes}"</div>}
                       {r.access_code && (
@@ -234,7 +317,8 @@ export default function AdminPanel() {
                     </div>
                   </div>
                 </Card>
-              ))
+                );
+              })
             )}
           </TabsContent>
 
@@ -257,6 +341,10 @@ export default function AdminPanel() {
                           {u.banned && <Badge variant="destructive">Banned</Badge>}
                         </div>
                         <div className="text-xs text-muted-foreground">{u.email}</div>
+                        <div className="text-[11px] text-muted-foreground">
+                          Joined {new Date(u.created_at).toLocaleDateString()}
+                          {u.last_login && <> · last seen {timeAgo(u.last_login)}</>}
+                        </div>
                         <div className="text-xs flex items-center gap-2">
                           <code className="font-mono text-secondary">{u.access_code}</code>
                           <Button size="sm" variant="ghost" className="h-6 px-2" onClick={() => copy(u.access_code)}>
