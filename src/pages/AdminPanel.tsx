@@ -56,6 +56,14 @@ Keep this code private — it's tied to your name.
   return `https://mail.google.com/mail/?${params.toString()}`;
 }
 
+function timeAgo(iso: string) {
+  const d = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (d < 60) return "just now";
+  if (d < 3600) return `${Math.floor(d / 60)}m ago`;
+  if (d < 86400) return `${Math.floor(d / 3600)}h ago`;
+  return `${Math.floor(d / 86400)}d ago`;
+}
+
 export default function AdminPanel() {
   const { signOut, adminEmail } = useAuth();
   const nav = useNavigate();
