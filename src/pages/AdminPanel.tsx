@@ -341,6 +341,10 @@ export default function AdminPanel() {
                           {u.banned && <Badge variant="destructive">Banned</Badge>}
                         </div>
                         <div className="text-xs text-muted-foreground">{u.email}</div>
+                        <div className="text-[11px] text-muted-foreground">
+                          Joined {new Date(u.created_at).toLocaleDateString()}
+                          {u.last_login && <> · last seen {timeAgo(u.last_login)}</>}
+                        </div>
                         <div className="text-xs flex items-center gap-2">
                           <code className="font-mono text-secondary">{u.access_code}</code>
                           <Button size="sm" variant="ghost" className="h-6 px-2" onClick={() => copy(u.access_code)}>
