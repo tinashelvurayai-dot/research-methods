@@ -66,6 +66,8 @@ export default function AdminPanel() {
   const [cardCount, setCardCount] = useState(0);
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
+  const [reqFilter, setReqFilter] = useState<"all" | "pending" | "approved" | "rejected" | "today" | "stale">("all");
+  const [reqSearch, setReqSearch] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -117,6 +119,33 @@ export default function AdminPanel() {
   };
 
   const pending = useMemo(() => requests.filter((r) => r.status === "pending"), [requests]);
+
+  function classify(r: Req) {
+    const ageH = (Date.now() - new Date(r.created_at).getTime()) / 3.6e6;
+    if (r.status === "pending" && ageH > 48) return { label: "Stale", tone: "destructive" as const, icon: AlertTriangle };
+    if (r.status === "pending" && ageH < 6) return { label: "Hot", tone: "default" as const, icon: Flame };
+    if (r.status === "approved" && ageH < 24) return { label: "Fresh approval", tone: "secondary" as const, icon: CheckCircle2 };
+    return null;
+  }
+
+  const filteredRequests = useMemo(() => {
+    const s = reqSearch.trim().toLowerCase();
+    return requests.filter((r) => {
+      if (reqFilter === "pending" && r.status !== "pending") return false;
+      if (reqFilter === "approved" && r.status !== "approved") return false;
+      if (reqFilter === "rejected" && r.status !== "rejected") return false;
+      if (reqFilter === "today" && Date.now() - new Date(r.created_at).getTime() > 864e5) return false;
+      if (reqFilter === "stale" && !(r.status === "pending" && Date.now() - new Date(r.created_at).getTime() > 48 * 3.6e6)) return false;
+      if (!s) return true;
+      return (
+        r.full_name.toLowerCase().includes(s) ||
+        r.email.toLowerCase().includes(s) ||
+        (r.whatsapp || "").toLowerCase().includes(s) ||
+        (r.access_code || "").toLowerCase().includes(s)
+      );
+    });
+  }, [requests, reqFilter, reqSearch]);
+
   const filteredUsers = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return users;
