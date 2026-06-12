@@ -211,21 +211,65 @@ export default function AdminPanel() {
 
           {/* Requests */}
           <TabsContent value="requests" className="mt-4 space-y-2">
+            <div className="flex flex-wrap gap-2 items-center">
+              <div className="relative flex-1 min-w-[220px] max-w-md">
+                <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input className="pl-9 pr-8" placeholder="Search name, email, WhatsApp or code" value={reqSearch} onChange={(e) => setReqSearch(e.target.value)} />
+                {reqSearch && (
+                  <button onClick={() => setReqSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-1 items-center text-xs">
+                <Filter className="h-3.5 w-3.5 text-muted-foreground mr-1" />
+                {(["all", "pending", "approved", "rejected", "today", "stale"] as const).map((k) => (
+                  <button
+                    key={k}
+                    onClick={() => setReqFilter(k)}
+                    className={`px-2.5 py-1 rounded-full border capitalize transition ${
+                      reqFilter === k ? "bg-secondary text-secondary-foreground border-secondary" : "border-border text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {k}
+                  </button>
+                ))}
+              </div>
+            </div>
             {loading ? (
               <p className="text-sm text-muted-foreground">Loading…</p>
-            ) : requests.length === 0 ? (
+            ) : filteredRequests.length === 0 ? (
               <Card className="p-6 text-center text-sm text-muted-foreground">No access requests yet.</Card>
             ) : (
-              requests.map((r) => (
+              filteredRequests.map((r) => {
+                const tag = classify(r);
+                const TagIcon = tag?.icon;
+                return (
                 <Card key={r.id} className="p-4 bg-card/60">
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{r.full_name}</span>
                         <StatusBadge status={r.status} />
+                        {tag && TagIcon && (
+                          <Badge variant={tag.tone} className="gap-1 text-[10px]">
+                            <TagIcon className="h-3 w-3" /> {tag.label}
+                          </Badge>
+                        )}
                       </div>
                       <div className="text-xs text-muted-foreground">
                         {r.email} · {r.whatsapp}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground flex flex-wrap gap-x-3 gap-y-0.5">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" /> Requested {new Date(r.created_at).toLocaleString()}
+                        </span>
+                        <span className="text-secondary/80">· {timeAgo(r.created_at)}</span>
+                        {r.approved_at && (
+                          <span className="flex items-center gap-1 text-emerald-500">
+                            <CheckCircle2 className="h-3 w-3" /> Approved {new Date(r.approved_at).toLocaleString()}
+                          </span>
+                        )}
                       </div>
                       {r.notes && <div className="text-xs italic text-muted-foreground">"{r.notes}"</div>}
                       {r.access_code && (
@@ -265,7 +309,8 @@ export default function AdminPanel() {
                     </div>
                   </div>
                 </Card>
-              ))
+                );
+              })
             )}
           </TabsContent>
 
