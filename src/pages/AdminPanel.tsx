@@ -13,11 +13,13 @@ import { toast } from "sonner";
 import {
   Users, Inbox, CheckCircle2, Clock, Mail, Search, Ban, RotateCcw,
   ShieldCheck, BookOpen, MessageSquare, Copy, LogOut, TrendingUp,
+  Calendar, Filter, Flame, AlertTriangle, X,
 } from "lucide-react";
 
 interface Req {
   id: string; full_name: string; email: string; whatsapp: string;
   status: string; access_code: string | null; created_at: string; notes: string | null;
+  approved_at?: string | null;
 }
 interface User {
   id: string; full_name: string; email: string; access_code: string;
