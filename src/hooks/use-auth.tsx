@@ -15,8 +15,7 @@ interface AuthCtx {
   adminEmail: string | null;
   loading: boolean;
   signInWithCode: (full_name: string, access_code: string) => Promise<void>;
-  signUpAdmin: (full_name: string, email: string, password: string) => Promise<void>;
-  signInAdmin: (email: string, password: string) => Promise<void>;
+  signInAdminCode: (code: string) => Promise<void>;
   signOut: () => void;
   refresh: () => Promise<void>;
 }
@@ -59,27 +58,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(u);
   }, []);
 
-  const signUpAdmin = useCallback(async (full_name: string, email: string, password: string) => {
-    const cleanEmail = email.trim().toLowerCase();
-    const { data, error } = await supabase.functions.invoke("admin-signup", {
-      body: { full_name, email: cleanEmail, password },
+  const signInAdminCode = useCallback(async (code: string) => {
+    const { data, error } = await supabase.functions.invoke("admin-code-login", {
+      body: { code: code.trim() },
     });
-    if (error) throw new Error(error.message);
-    if (!data?.ok) throw new Error(data?.error || "Admin setup failed");
-    localStorage.setItem(ADMIN_KEY, cleanEmail);
+    if (error && !data) throw new Error("Invalid access code");
+    if (!data?.ok) throw new Error(data?.error || "Invalid access code");
+    const label = data.label || "Administrator";
+    localStorage.setItem(ADMIN_KEY, label);
     if (data.token) localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
-    setAdminEmail(cleanEmail);
-  }, []);
-
-  const signInAdmin = useCallback(async (email: string, password: string) => {
-    const { data, error } = await supabase.functions.invoke("admin-login", {
-      body: { email: email.trim().toLowerCase(), password },
-    });
-    if (error) throw new Error(error.message);
-    if (!data?.ok) throw new Error(data?.error || "Login failed");
-    localStorage.setItem(ADMIN_KEY, email.trim().toLowerCase());
-    if (data.token) localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
-    setAdminEmail(email.trim().toLowerCase());
+    setAdminEmail(label);
   }, []);
 
   const signOut = useCallback(() => {
@@ -107,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={{
       user, isAdmin: !!adminEmail, adminEmail, loading,
-      signInWithCode, signUpAdmin, signInAdmin, signOut, refresh,
+      signInWithCode, signInAdminCode, signOut, refresh,
     }}>
       {children}
     </Ctx.Provider>

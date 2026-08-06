@@ -27,7 +27,7 @@ export function AppHeader({ showBack = false, backTo = "/" }: { showBack?: boole
     if (s.timer) clearTimeout(s.timer);
     if (s.count >= 7) {
       s.count = 0;
-      nav(isAdmin ? "/admin" : "/admin/setup");
+      nav(isAdmin ? "/admin" : "/admin/login");
       return;
     }
     s.timer = setTimeout(() => {
