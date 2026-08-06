@@ -19,7 +19,7 @@ export type Database = {
           access_code: string | null
           approved_at: string | null
           created_at: string
-          email: string
+          email: string | null
           full_name: string
           id: string
           notes: string | null
@@ -30,7 +30,7 @@ export type Database = {
           access_code?: string | null
           approved_at?: string | null
           created_at?: string
-          email: string
+          email?: string | null
           full_name: string
           id?: string
           notes?: string | null
@@ -41,7 +41,7 @@ export type Database = {
           access_code?: string | null
           approved_at?: string | null
           created_at?: string
-          email?: string
+          email?: string | null
           full_name?: string
           id?: string
           notes?: string | null
