@@ -8,6 +8,8 @@ import { RichContent } from "@/components/RichContent";
 import { ChevronLeft, ChevronRight, RotateCw, Shuffle, Check, X, Flame, Trophy, Sparkles, Keyboard } from "lucide-react";
 import { RESEARCH_METHODS_CARDS } from "@/data/research-methods-cards";
 import { useScreenshotProtection } from "@/hooks/use-screenshot-protection";
+import { useMastery, useBookmarks } from "@/hooks/use-study-state";
+import { Star } from "lucide-react";
 
 interface CardRec { id: string; question: string; answer: string; }
 
@@ -18,6 +20,8 @@ function slugify(s: string) {
 export default function TopicView() {
   const { slug } = useParams<{ slug: string }>();
   const { hidden } = useScreenshotProtection();
+  const { setLevel } = useMastery();
+  const bookmarks = useBookmarks();
   const [cards, setCards] = useState<CardRec[]>([]);
   const [topicName, setTopicName] = useState("");
   const [idx, setIdx] = useState(0);
@@ -73,16 +77,18 @@ export default function TopicView() {
     if (!current) return;
     setKnown((s) => new Set(s).add(current.id));
     setUnsure((s) => { const n = new Set(s); n.delete(current.id); return n; });
+    setLevel(current.id, "got");
     setStreak((s) => s + 1);
     next();
-  }, [current, next]);
+  }, [current, next, setLevel]);
   const markUnsure = useCallback(() => {
     if (!current) return;
     setUnsure((s) => new Set(s).add(current.id));
     setKnown((s) => { const n = new Set(s); n.delete(current.id); return n; });
+    setLevel(current.id, "practice");
     setStreak(0);
     next();
-  }, [current, next]);
+  }, [current, next, setLevel]);
   const restart = useCallback(() => {
     setKnown(new Set()); setUnsure(new Set()); setStreak(0); setIdx(0); setFlipped(false);
   }, []);
@@ -168,9 +174,19 @@ export default function TopicView() {
               onClick={() => setFlipped((f) => !f)}
             >
               <div className="text-xs uppercase tracking-wider text-secondary mb-3">
-                {flipped ? "Answer" : "Question"} · tap or press space to flip
+                <span className="flex items-center justify-between">
+                  <span>{flipped ? "Answer" : "Question"} · tap or press space to flip</span>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); bookmarks.toggle(current.id); }}
+                    title="Bookmark this card"
+                    className="p-1 rounded hover:bg-muted transition"
+                  >
+                    <Star className={`h-4 w-4 ${bookmarks.has(current.id) ? "fill-secondary text-secondary" : "text-muted-foreground"}`} />
+                  </button>
+                </span>
               </div>
-              <div className="text-lg">
+              <div key={`${current.id}-${flipped}`} className="text-lg animate-in fade-in slide-in-from-bottom-1 duration-200">
                 <RichContent text={flipped ? current.answer : current.question} />
               </div>
             </Card>

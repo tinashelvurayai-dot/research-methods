@@ -1,0 +1,1 @@
+ALTER TABLE public.access_requests ALTER COLUMN email DROP NOT NULL;
