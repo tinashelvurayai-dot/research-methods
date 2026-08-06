@@ -186,7 +186,7 @@ export default function TopicView() {
                   </button>
                 </span>
               </div>
-              <div key={`${current.id}-${flipped}`} className="text-lg animate-fade-in">
+              <div key={`${current.id}-${flipped}`} className="text-lg animate-in fade-in slide-in-from-bottom-1 duration-200">
                 <RichContent text={flipped ? current.answer : current.question} />
               </div>
             </Card>
